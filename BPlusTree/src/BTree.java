@@ -90,6 +90,7 @@ class BTree {
     		this.root.keys[0] = student.studentId;
     		this.root.values[0] = student.recordId;
     		this.root.n++;
+    		
     	} else {
     		//if root already exists
     		BTreeNode current = root;
@@ -168,6 +169,7 @@ class BTree {
     			tempKey[i] = student.studentId;
     			tempValue[i] = student.recordId;
     			
+    			//TODO switch to (max size + 1)/2 
     			//set the new size for the existing node and the new node
     			//new size is (max size + 1)/2 
     			current.n = this.t;
@@ -182,9 +184,8 @@ class BTree {
     				current.values[i] = tempValue[i];
     			}
     			
-    			//TODO add to recursive split
     			//clear the remain keys and values from the existing node
-    			//these valus now live in the new node
+    			//these values now live in the new node
     			for(i = current.n; i < 2 * this.t - 1; i++) {
     				current.keys[i] = 0;
     				current.values[i] = 0;
@@ -295,16 +296,30 @@ class BTree {
     		int j;
     		for (i = 0, j = current.n + 1; i < newNode.n; i++, j++) {
     			newNode.keys[i] = tempKey[j];
+    			System.out.println(j);
     		}
     		
     		for (i = 0,j = current.n + 1; i < newNode.n + 1; i++, j++) {
     			newNode.children[i] = tempChildren[j];
     		}
     		
+    		//TODO
+			//clear the remain keys and children from the existing node
+			//these values now live in the new node
+			for(i = current.n ; i < 2 * this.t - 1; i++) {
+				current.keys[i] = 0;
+			}
+			
+			for(i = current.n + 1; i < 2 * this.t; i++) {
+				current.children[i] = null;
+			}
+    		
     		//if the existing node is the root node
     		if (current == root) {
     			//create a new non-leaf node and sent values
     			BTreeNode newRoot = new BTreeNode(this.t, false);
+    			
+    			newRoot.keys[0] = newNode.children[0].keys[0];
     			newRoot.children[0] = current;
                 newRoot.children[1] = newNode;
                 newRoot.n = 1;
