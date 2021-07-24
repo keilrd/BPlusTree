@@ -1,0 +1,37 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x000000010c687585, pid=3606, tid=23811
+#
+# JRE version: OpenJDK Runtime Environment AdoptOpenJDK (11.0.8+10) (build 11.0.8+10)
+# Java VM: OpenJDK 64-Bit Server VM AdoptOpenJDK (11.0.8+10, mixed mode, tiered, compressed oops, g1 gc, bsd-amd64)
+# Problematic frame:
+# C  [libjimage.dylib+0x2585]  _ZNK15ImageFileReader19find_location_indexEPKcPy+0x2b
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://github.com/AdoptOpenJDK/openjdk-support/issues
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:51020 -javaagent:/Users/mohammadislam/eclipse/java-2020-06/Eclipse.app/Contents/Eclipse/configuration/org.eclipse.osgi/214/0/.cp/lib/javaagent-shaded.jar -Dfile.encoding=UTF-8 BTreeMain
+
+Host: MacBookAir10,1 x86_64 2400 MHz, 8 cores, 8G, Darwin 20.5.0
+Time: Thu Jul 22 23:22:57 2021 CDT elapsed time: 573 seconds (0d 0h 9m 33s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007fe7db0f8800):  JavaThread "Signal Dispatcher" daemon [_thread_in_vm, id=23811, stack(0x000000030d10f000,0x000000030d20f000)]
+
+Stack: [0x000000030d10f000,0x000000030d20f000],  sp=0x000000030d20d360,  free space=1016k
+Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libjimage.dylib+0x2585]  _ZNK15ImageFileReader19find_location_indexEPKcPy+0x2b
+C  [libjimage.dylib+0x28d8]  JIMAGE_FindResource+0xcf
+V  [libjvm.dylib+0x1ea25d]  _ZN19ClassPathImageEntry11open_streamEPKcP6Thread+0x45
+V  [libjvm.dylib+0x1ec7d0]  _ZN11ClassLoader10load_classEP6SymbolbP6Thread+0x144
+V  [libjvm.dylib+0x6c56d8]  _ZN16SystemDictionary19load_instance_classEP6Symbol6HandleP6Thread+0x2f6
+V  [libjvm.dylib+0x6c47a7]  _ZN16SystemDictionary30resolve_instance_class_or_nullEP6Symbol6HandleS2_P6Thread+0x42f
+V  [libjvm.dylib+0x6c3fdd]  _ZN16SystemDictionary15resolve_or_failEP6Symbol6HandleS2_bP6Thread+0x1b
+V  [libjvm.dylib+0x2597c8]  _ZN12ConstantPool13klass_at_implERK18constantPoolHandleibP6Thread+0x10a
