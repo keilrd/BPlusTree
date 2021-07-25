@@ -1,9 +1,7 @@
-/.classpath
-/.project
 /BTree.class
 /BTreeMain.class
 /BTreeNode.class
 /Student.class
-/Student.csv
-/input.txt
-/output.txt
+/BTreeMainTest.class
+/.gitignore
+/hs_err_pid3606.log
