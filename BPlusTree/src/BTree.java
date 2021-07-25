@@ -239,12 +239,15 @@ class BTree {
         		//get current line from scanner
         		String line = scanner.nextLine();
         		
+        		//if found set found boolean and quit since we don't need to 
+        		//insert it more than once 
         		if(newStudent.equals(line)) {
         			found = true;
         			break;
         		}
         	}
     		
+    		//if we didn't find the line we need to add it
     		if(!found) {
     			FileWriter fileWriter = new FileWriter("src/Student.csv",true);
     			PrintWriter writer = new PrintWriter(fileWriter);
@@ -386,7 +389,6 @@ class BTree {
     		}
     	}
     	
-    	//TODO add inserted node to file
     }
     
     //helper function to find the parent node of a node
