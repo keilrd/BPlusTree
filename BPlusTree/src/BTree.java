@@ -400,13 +400,31 @@ class BTree {
     List<Long> print() {
 
         List<Long> listOfRecordID = new ArrayList<>();
-
+        
+        // null case
+        if (this.root == null) {
+        	return listOfRecordID;
+        }
+        
         /**
          * TODO:
          * Implement this function to print the B+Tree.
          * Return a list of recordIDs from left to right of leaf nodes.
          *
          */
+        
+        BTreeNode current = this.root;
+        while(current.leaf == false) {
+        	current = current.children[0];
+        }
+
+        while(current != null) {
+			for (int i = 0; i < current.n; i++) {
+        		listOfRecordID.add(current.keys[i]);
+        	}
+			current = current.next;
+        }
+        
         return listOfRecordID;
     }
 }
