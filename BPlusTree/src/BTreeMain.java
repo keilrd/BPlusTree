@@ -14,7 +14,7 @@ public class BTreeMain {
         /** Read the input file -- input.txt */
         Scanner scan = null;
         try {
-            scan = new Scanner(new File("input.txt"));
+            scan = new Scanner(new File("src/input.txt"));
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
         }
@@ -97,7 +97,7 @@ public class BTreeMain {
         List<Student> studentList = new ArrayList<>();
         
         //read file line by line
-        try (Scanner scanner = new Scanner(new File("Student.csv"));) {
+        try (Scanner scanner = new Scanner(new File("src/Student.csv"));) {
         	while (scanner.hasNextLine()) {
         		//get current line from scanner
         		String line = scanner.nextLine();
@@ -116,6 +116,7 @@ public class BTreeMain {
         		//create new student and add to array list
         		studentList.add(new Student(studentId, age, studentName, major, level, recordId));
         	}
+        	scanner.close();
         	
         } catch(FileNotFoundException e) {
         	System.out.println(e);

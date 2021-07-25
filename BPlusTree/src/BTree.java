@@ -1,5 +1,10 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * B+Tree Structure
@@ -220,6 +225,41 @@ class BTree {
     			}
     		}
     	}
+    	
+    	//write line to file if it does not exist
+    	//create new student string
+    	String newStudent = student.studentId + "," + student.studentName + "," + student.major + 
+    			"," + student.level + "," + student.age + "," + student.recordId;
+    	
+    	//open file and create scanner
+    	try (Scanner scanner = new Scanner(new File("src/Student.csv"));) {
+    		boolean found = false;
+    		//loop over lines in file to see if the student is already in file
+    		while (scanner.hasNextLine()) {        		
+        		//get current line from scanner
+        		String line = scanner.nextLine();
+        		
+        		if(newStudent.equals(line)) {
+        			found = true;
+        			break;
+        		}
+        	}
+    		
+    		if(!found) {
+    			FileWriter fileWriter = new FileWriter("src/Student.csv",true);
+    			PrintWriter writer = new PrintWriter(fileWriter);
+    			writer.println(newStudent);
+    			writer.flush();
+    			writer.close();
+    		}
+        	
+        } catch(FileNotFoundException e) {
+        	System.out.println("Insert: " + e);
+        	
+        } catch(Exception e2) {
+        	System.out.println(e2);
+        }
+    	
     	
         return this;
     }
