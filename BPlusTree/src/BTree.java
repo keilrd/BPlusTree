@@ -21,6 +21,10 @@ class BTree {
         this.root = null;
         this.t = t;
     }
+    
+    public BTreeNode getRoot() {
+    	return this.root;
+    }
 
     long search(long studentId) {
         /**
@@ -176,6 +180,7 @@ class BTree {
     			newLeaf.n = this.t;
     			
     			//set the next point in the existing node to the new node
+    			newLeaf.next = current.next;
     			current.next = newLeaf;
     			
     			//set the first (max size + 1)/2 key and values in the existing node
@@ -281,7 +286,7 @@ class BTree {
     		tempKey[i] = key;
     		
     		//make space of the new children
-    		for(int j = 2 * this.t; j > i + 1; j++) {
+    		for(int j = 2 * this.t; j > i + 1; j--) {
     			tempChildren[j] = tempChildren[j-1];
     		}
     		
@@ -291,6 +296,15 @@ class BTree {
     		//set the new values for the existing and new nodes
     		current.n = this.t;
     		newNode.n = (2 * this.t - 1) - this.t;
+    		
+    		//copy the values and children to the current node
+    		for (i = 0; i < current.n; i++) {
+    			current.keys[i] = tempKey[i];
+    		}
+    		
+    		for (i = 0; i < current.n + 1; i++) {
+    			current.children[i] = tempChildren[i];
+    		}
     		
     		//copy the values and children to the new node
     		int j;
@@ -319,7 +333,8 @@ class BTree {
     			//create a new non-leaf node and sent values
     			BTreeNode newRoot = new BTreeNode(this.t, false);
     			
-    			newRoot.keys[0] = newNode.children[0].keys[0];
+    			//newRoot.keys[0] = newNode.children[0].keys[0];
+    			newRoot.keys[0] =getLeftKey(newNode);
     			newRoot.children[0] = current;
                 newRoot.children[1] = newNode;
                 newRoot.n = 1;
@@ -328,7 +343,9 @@ class BTree {
                 root = newRoot;
     		} else {
     			//if not root recursively insert in the parent nodes
-    			recursiveInsert(current.keys[current.n],findParentNode(root,current), newNode);
+    			//recursiveInsert(newNode.children[newNode.n-1].keys[0],findParentNode(root,current), newNode);
+    			BTreeNode parent = findParentNode(root,current);
+    			recursiveInsert(getLeftKey(newNode), parent, newNode);
     		}
     	}
     }
@@ -358,6 +375,15 @@ class BTree {
     	}
     	
     	return parent;
+    }
+    
+    Long getLeftKey(BTreeNode current) {
+    	
+    	while (current.leaf == false) {
+    		current = current.children[0];
+    	}
+    	
+    	return current.keys[0];
     }
     
 
