@@ -173,7 +173,6 @@ class BTree {
     			tempKey[i] = student.studentId;
     			tempValue[i] = student.recordId;
     			
-    			//TODO switch to (max size + 1)/2 
     			//set the new size for the existing node and the new node
     			//new size is (max size + 1)/2 
     			current.n = this.t;
@@ -310,14 +309,12 @@ class BTree {
     		int j;
     		for (i = 0, j = current.n + 1; i < newNode.n; i++, j++) {
     			newNode.keys[i] = tempKey[j];
-    			System.out.println(j);
     		}
     		
     		for (i = 0,j = current.n + 1; i < newNode.n + 1; i++, j++) {
     			newNode.children[i] = tempChildren[j];
     		}
     		
-    		//TODO
 			//clear the remain keys and children from the existing node
 			//these values now live in the new node
 			for(i = current.n ; i < 2 * this.t - 1; i++) {
@@ -348,6 +345,8 @@ class BTree {
     			recursiveInsert(getLeftKey(newNode), parent, newNode);
     		}
     	}
+    	
+    	//TODO add inserted node to file
     }
     
     //helper function to find the parent node of a node
