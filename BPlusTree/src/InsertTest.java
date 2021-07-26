@@ -792,6 +792,4 @@ public class InsertTest {
 		assertTrue(leaf14.values[1] == 38);
 		assertTrue(leaf14.values[2] == 39);
 	}
-		
-
 }

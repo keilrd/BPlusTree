@@ -79,12 +79,6 @@ class BTree {
     }
 
     BTree insert(Student student) {
-        /**
-         * TODO:
-         * Implement this function to insert in the B+Tree.
-         * Also, insert in student.csv after inserting in B+Tree.
-         */
-    	
     	//throw an exception if student is null
     	if (student == null) {
     		throw new IllegalArgumentException("Argument 'student' is null");
