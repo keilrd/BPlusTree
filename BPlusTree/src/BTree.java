@@ -79,6 +79,8 @@ class BTree {
     }
 
     BTree insert(Student student) {
+    	int maxNode = (2 * this.t);
+    	
     	//throw an exception if student is null
     	if (student == null) {
     		throw new IllegalArgumentException("Argument 'student' is null");
@@ -121,7 +123,7 @@ class BTree {
     		//after insert location has been found
     		
     		//if the node is not full
-    		if (current.n < ((this.t * 2) - 1)) {
+    		if (current.n < maxNode) {
     			int i = 0;
     			
     			//find the location where we need to insert the new key
@@ -147,23 +149,23 @@ class BTree {
     			BTreeNode newLeaf = new BTreeNode(this.t,true);
     			
     			//create temp data structures of max size + 1
-    			long[] tempKey = new long[2 * this.t];
-    			long[] tempValue = new long[2 * this.t];
+    			long[] tempKey = new long[maxNode + 1];
+    			long[] tempValue = new long[maxNode + 1];
     			
     			//copy nodes key and value to the new temp data structures
-    			for(int i = 0; i < ((2 * this.t) - 1); i++) {
+    			for(int i = 0; i < maxNode; i++) {
     				tempKey[i] = current.keys[i];
     				tempValue[i] = current.values[i];
     			}
     			
     			//find the location where we need to insert the new key
     			int i = 0;
-    			while(student.studentId > tempKey[i] && i < (2 * this.t - 1)) {
+    			while(student.studentId > tempKey[i] && i < maxNode) {
     				i++;
     			}
     			
     			//make room for the new key and value
-    			for(int j = 2 * t - 1; j >= i; j--) {
+    			for(int j = maxNode; j >= i; j--) {
     				tempKey[j] = tempKey[j - 1];
     				tempValue[j] = tempValue[j - 1];
     			}
@@ -175,7 +177,7 @@ class BTree {
     			//set the new size for the existing node and the new node
     			//new size is (max size + 1)/2 
     			current.n = this.t;
-    			newLeaf.n = this.t;
+    			newLeaf.n = (maxNode + 1) - this.t;
     			
     			//set the next point in the existing node to the new node
     			newLeaf.next = current.next;
@@ -189,7 +191,7 @@ class BTree {
     			
     			//clear the remain keys and values from the existing node
     			//these values now live in the new node
-    			for(i = current.n; i < 2 * this.t - 1; i++) {
+    			for(i = current.n; i < maxNode; i++) {
     				current.keys[i] = 0;
     				current.values[i] = 0;
     			}
@@ -263,8 +265,9 @@ class BTree {
     
     //recursive helper function to insert a node into the internal (non-leaf) nodes
     void recursiveInsert(long key, BTreeNode current, BTreeNode child) {
+    	int maxNode = (2 * this.t);
     	//if the nodes has available space for a new child
-    	if(current.n < 2 * this.t -1) {
+    	if(current.n < maxNode) {
     		int i = 0;
     		
     		//find the location where we need to insert
@@ -295,26 +298,26 @@ class BTree {
     		BTreeNode newNode = new BTreeNode(this.t, false);
     		
     		//temp data structures for split
-    		long[] tempKey= new long[2 * current.t];
-    		BTreeNode[] tempChildren = new BTreeNode[2 * current.t + 1];
+    		long[] tempKey= new long[maxNode + 1];
+    		BTreeNode[] tempChildren = new BTreeNode[maxNode + 2];
     		
     		//copy over the current nodes key and children to the temp data structures
-    		for (int i = 0; i < 2 * this.t - 1; i++) {
+    		for (int i = 0; i < maxNode; i++) {
     			tempKey[i] = current.keys[i];
     		}
     		
-    		for (int i = 0; i < 2 * this.t; i++) {
+    		for (int i = 0; i < maxNode + 1; i++) {
     			tempChildren[i] = current.children[i];
     		}
     		
     		//find the location where we need to insert the new key
     		int i = 0;
-    		while(key > tempKey[i] && i < 2 * current.t - 1) {
+    		while(key > tempKey[i] && i < maxNode) {
     			i++;
     		}
     		
     		//makes space for the new key
-    		for(int j = 2 * this.t - 1; j > i; j--) {
+    		for(int j = maxNode; j > i; j--) {
     			tempKey[j] = tempKey[j - 1];
     		}
     		
@@ -322,7 +325,7 @@ class BTree {
     		tempKey[i] = key;
     		
     		//make space of the new children
-    		for(int j = 2 * this.t; j > i + 1; j--) {
+    		for(int j = maxNode + 1; j > i + 1; j--) {
     			tempChildren[j] = tempChildren[j-1];
     		}
     		
@@ -331,7 +334,7 @@ class BTree {
     		
     		//set the new values for the existing and new nodes
     		current.n = this.t;
-    		newNode.n = (2 * this.t - 1) - this.t;
+    		newNode.n = maxNode - this.t;
     		
     		//copy the values and children to the current node
     		for (i = 0; i < current.n; i++) {
@@ -354,11 +357,11 @@ class BTree {
     		
 			//clear the remain keys and children from the existing node
 			//these values now live in the new node
-			for(i = current.n ; i < 2 * this.t - 1; i++) {
+			for(i = current.n ; i < maxNode; i++) {
 				current.keys[i] = 0;
 			}
 			
-			for(i = current.n + 1; i < 2 * this.t; i++) {
+			for(i = current.n + 1; i < maxNode + 1; i++) {
 				current.children[i] = null;
 			}
     		
