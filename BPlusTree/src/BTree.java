@@ -425,13 +425,353 @@ class BTree {
     }
     
 
+    /**
+     * Deletes the record ID for a given student ID from the tree
+     * @param studentId - student ID to delete the record ID for
+     * @return - true if the record is deleted successfully, otherwise false.
+     */
     boolean delete(long studentId) {
-        /**
-         * TODO:
-         * Implement this function to delete in the B+Tree.
-         * Also, delete in student.csv after deleting in B+Tree, if it exists.
-         * Return true if the student is deleted successfully otherwise, return false.
-         */
+
+        //TODO delete from CSV file too
+
+        boolean success = false;
+
+        success = delete(root, studentId);
+
+        // if the root is now empty, the tree is empty so delete the root
+        if (root != null && root.n == 0) {
+            root = null;
+        }
+
+
+        return success;
+
+    }
+
+    /***********************************************************
+     * Helper function to delete a node for the given key
+     * @param current - the node to search for the key to delete
+     * @param studentId - The key to search for
+     * @return true if the student id is deleted, otherwise false
+     **********************************************************/
+    boolean delete(BTreeNode current, long studentId) {
+
+        if (current == null) {
+            return false; // key isn't in the tree if the tree is empty
+        }
+
+        if (current.leaf) {
+            return deleteLeaf(current, studentId);
+        }
+
+        else {
+            return deleteInternal(current, studentId);
+        }
+    }
+
+    /***********************************************************
+     * Helper function to search a leaf node for the given key
+     * @param current - the leaf node to search
+     * @param studentId - The key to search for
+     * @return the record ID for the given student id or -1
+     *         if it is not found
+     **********************************************************/
+    boolean deleteLeaf(BTreeNode current, long studentId) {
+
+        boolean found = false;
+
+        for (int i = 0; i < current.n; i++) {
+
+            // stop searching if we've passed where they key should be
+            if (!found && studentId < current.keys[i]) {
+                return false;
+            }
+
+            // check if we found the key
+            if (!found && studentId == current.keys[i]) {
+
+                found = true;
+
+            }
+
+            if (found) {
+
+                if (i == current.n - 1) {
+                    current.keys[i] = 0;
+                    current.values[i] = 0;
+                }
+
+                else {
+                    current.keys[i] = current.keys[i + 1];
+                    current.values[i] = current.values[i + 1];
+                }
+
+            }
+
+        }
+
+        if (found) {
+            current.n--;
+        }
+
+        return found;
+
+    }
+
+    /***********************************************************
+     * Helper function to continue searching the tree for a given
+     * key in an internal node.
+     * @param current - the node we're currently searching
+     * @param studentId - the key we're searching for
+     * @return the record ID for the student ID or -1 if it is
+     *         not found
+     **********************************************************/
+    boolean deleteInternal(BTreeNode current, long studentId) {
+
+        boolean found = false;
+        BTreeNode child = null;
+        int childIndex = 0;
+
+        for (int i = 0; i < current.n && child == null; i++) {
+            if (studentId < current.keys[i]) {
+                child = current.children[i];
+                childIndex = i;
+                found = delete(child, studentId);
+            }
+        }
+
+        // if the key wasn't less than any of the keys in the node, search the far right child
+        if (child == null) {
+            child = current.children[current.n];
+            childIndex = current.n;
+            found = delete(child, studentId);
+        }
+
+        if (!found) {
+            return false;
+        }
+
+
+        // Rebalance Child
+        if (child.n < t) {
+
+            boolean done = false;
+
+            BTreeNode rightSibling = null;
+            BTreeNode leftSibling = null;
+
+
+            // attempt to borrow from right sibling
+
+            if (childIndex < current.n) { // if there is a right sibling
+
+                rightSibling = current.children[childIndex + 1]; // check right sibling first if it
+                // exists
+
+                if (rightSibling.n > t) {
+
+                    // borrow from sibling
+
+                    if (!child.leaf) {
+
+                        child.keys[child.n] = current.keys[childIndex];
+                        child.children[child.n + 1] = rightSibling.children[0];
+                        current.keys[childIndex] = rightSibling.keys[0];
+
+                    }
+
+                    else {
+                        child.keys[child.n] = rightSibling.keys[0];
+                        child.values[child.n] = rightSibling.values[0];
+                    }
+
+                    child.n++;
+
+                    // shift key/value pairs in sibling
+                    for (int i = 0; i < rightSibling.n - 1; i++) {
+                        rightSibling.keys[i] = rightSibling.keys[i + 1];
+                        rightSibling.values[i] = rightSibling.values[i + 1];
+                        rightSibling.children[i] = rightSibling.children[i + 1];
+                    }
+
+                    // clear last key/value pair
+                    rightSibling.keys[rightSibling.n - 1] = 0;
+                    rightSibling.values[rightSibling.n - 1] = 0;
+                    rightSibling.children[rightSibling.n - 1] =
+                        rightSibling.children[rightSibling.n];
+                    rightSibling.children[rightSibling.n] = null;
+                    rightSibling.n--;
+
+                    // update parent
+                    if (child.leaf) {
+                        current.keys[childIndex] = rightSibling.keys[0];
+                    }
+
+                    done = true;
+                }
+
+            }
+
+            // if we couldn't borrow from the right, borrow from the left if possible
+
+            if (!done) {
+
+                if (childIndex > 0) { // if there is a left sibling
+
+                    leftSibling = current.children[childIndex - 1]; // check right sibling first if
+                                                                    // it
+                    // exists
+
+                    if (leftSibling.n > t) {
+
+                        // borrow from sibling
+
+                        if (!child.leaf) {
+                            child.children[child.n + 1] = child.children[child.n];
+                        }
+
+                        // shift key/value pairs in child
+                        for (int i = child.n; i > 0; i--) {
+                            child.keys[i] = child.keys[i - 1];
+                            child.values[i] = child.values[i - 1];
+                            child.children[i] = child.children[i - 1];
+                        }
+
+                        if (child.leaf) {
+                            child.keys[0] = leftSibling.keys[leftSibling.n - 1];
+                            child.values[0] = leftSibling.values[leftSibling.n - 1];
+                            child.n++;
+
+                            // update parent value
+                            current.keys[childIndex - 1] = child.keys[0];
+
+                        }
+
+                        else {
+                            child.keys[0] = current.keys[childIndex - 1];
+                            child.children[0] = leftSibling.children[leftSibling.n];
+                            child.n++;
+
+                            // update parent value
+                            current.keys[childIndex - 1] = leftSibling.keys[leftSibling.n - 1];
+
+                        }
+
+                        // clear last key/value pair in sibling
+                        leftSibling.keys[leftSibling.n - 1] = 0;
+                        leftSibling.values[leftSibling.n - 1] = 0;
+                        leftSibling.children[leftSibling.n] = null;
+                        leftSibling.n--;
+
+
+
+                        done = true;
+                    }
+
+                }
+
+            }
+
+            // if we weren't able to borrow from the left or the right, merge
+            if (!done) {
+
+                // merge right if there's a right sibling
+                if (rightSibling != null) {
+
+                    int offset = 0;
+                    int addedKeys = 0; // keep track of how many keys are shifted to update n
+
+                    // if we're merging internal nodes, shift down key from the parent
+                    if (!child.leaf) {
+                        offset = 1;
+                        child.keys[child.n] = current.keys[childIndex];
+                        child.children[child.n + 1] = rightSibling.children[0];
+                        addedKeys++;
+                    }
+
+                    // add values from sibling
+                    for (int i = 0; i < rightSibling.n; i++) {
+                        child.keys[child.n + i + offset] = rightSibling.keys[i];
+                        child.values[child.n + i + offset] = rightSibling.values[i];
+                        child.children[child.n + i + 1 + offset] =
+                            rightSibling.children[i + offset];
+                        addedKeys++;
+                    }
+
+                    child.n += addedKeys;
+
+
+                    for (int i = childIndex; i < current.n - 1; i++) {
+                        current.keys[i] = current.keys[i + 1];
+                        current.children[i + 1] = current.children[i + 2];
+
+                    }
+
+                    // clear last key/child pointer
+                    current.keys[current.n - 1] = 0;
+                    current.children[current.n] = null;
+                    current.n--;
+
+                    // update next pointer
+                    child.next = rightSibling.next;
+
+                    // if we emptied the root, make the child the new root
+                    if (current == this.root && current.n == 0) {
+                        this.root = child;
+                    }
+
+                }
+
+                // otherwise merge left
+                else {
+
+                    int offset = 0;
+                    int addedKeys = 0; // keep track of how many keys are shifted to update n
+
+                    // if we're merging internal nodes, shift down key from the parent
+                    if (!child.leaf) {
+                        offset = 1;
+                        leftSibling.keys[leftSibling.n] = current.keys[childIndex - 1];
+                        leftSibling.children[leftSibling.n + 1] = child.children[0];
+                        addedKeys++;
+                    }
+
+                    // add values from sibling
+                    for (int i = 0; i < child.n; i++) {
+                        leftSibling.keys[leftSibling.n + i + offset] = child.keys[i];
+                        leftSibling.values[leftSibling.n + i + offset] = child.values[i];
+                        leftSibling.children[leftSibling.n + i + 1] = child.children[i + 1];
+                        addedKeys++;
+                    }
+
+                    leftSibling.n += addedKeys;
+
+
+                    for (int i = childIndex - 1; i < current.n - 1; i++) {
+                        current.keys[i] = current.keys[i + 1];
+                        current.children[i + 1] = current.children[i + 2];
+
+                    }
+
+                    // clear last key/child pointer and decrement n
+                    current.keys[current.n - 1] = 0;
+                    current.children[current.n] = null;
+                    current.n--;
+
+                    // update next pointer
+                    leftSibling.next = child.next;
+
+                }
+
+                // if we emptied the root, make the child the new root
+                if (current == this.root && current.n == 0) {
+                    this.root = leftSibling;
+                }
+
+            }
+
+        }
+
         return true;
     }
 
