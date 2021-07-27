@@ -86,6 +86,7 @@ class BTree {
     		throw new IllegalArgumentException("Argument 'student' is null");
     	}
     	
+    	
     	//create new node if tree is empty
     	if (this.root == null) {
     		//create new root node
@@ -107,6 +108,10 @@ class BTree {
     			
     			//loop over keys in the node
     			for (int i =0; i < current.n; i++) {
+    				//if key is already inserted in the tree exit early without inserting
+    				if (student.studentId == current.keys[i]) {
+    					return this;
+    				}
     				//if current node key is larger than the key to insert we found where we need to insert the node
     				if (student.studentId < current.keys[i]) {
     					current = current.children[i];
