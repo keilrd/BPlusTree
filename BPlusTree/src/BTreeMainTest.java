@@ -98,22 +98,45 @@ public class BTreeMainTest {
 		for (long i = 26; i<38 ; i++) {
 			bTree.insert(new Student(i, (int)i, "test", "CS", "level", 1));
 		}
-		System.out.println("Root 0: " + bTree.getRoot().keys[0]);
-		System.out.println("Root 1: " + bTree.getRoot().keys[1]);
+//		System.out.println("Root 0: " + bTree.getRoot().keys[0]);
+//		System.out.println("Root 1: " + bTree.getRoot().keys[1]);
 		assert(bTree.getRoot().keys[0] == 13);
 		assert(bTree.getRoot().keys[1] == 25);
-		assert(bTree.getRoot().keys[1] == 0);
+		assert(bTree.getRoot().keys[2] == 0);
 		
 	}
-	
 	
 	@Test
 	public void testDoubleInsert() throws Exception {
 		setUp("Student.csv","input.txt");
+//		System.out.println(bTree.print().size());
 		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+//		System.out.println(bTree.print().size());
 		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
-		assert(bTree.print().size() == 25);
+//		System.out.println(bTree.print().size());
+		assert(bTree.print().size() == 37);
 	}
 	
-	
+	@Test
+	public void testDelete() throws Exception {
+		setUp("Student.csv","input.txt");
+//		System.out.println("test delete before deleting: " + bTree.print());
+		for(long i = 1; i < 25; i++) {
+			assert(bTree.delete(i));
+			assert(!bTree.print().contains(i));
+			for (long j=i+1; j<25; j++) {
+				assert(bTree.print().contains(j));
+				assert(bTree.search(j) != -1);
+			}
+		}
+//		System.out.println("test delete after deleting: "+ bTree.print());
+	}
+	@Test
+	public void testFailDelete() throws Exception {
+		setUp("Student.csv","input.txt");
+//		System.out.println(bTree.print());
+		for(long i = 50; i < 100; i++) {
+			assert(bTree.delete(i)==false);
+		}
+	}
 }
