@@ -22,10 +22,6 @@ class BTree {
      **/
     private int t;
 
-    /**
-     * Creates an empty BTree
-     * @param t the minimum degree of the tree
-     */
     BTree(int t) {
         this.root = null;
         this.t = t;
