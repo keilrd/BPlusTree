@@ -31,13 +31,13 @@ class BTree {
     	return this.root;
     }
 
+    /**
+     * Search B+Tree for a given student id
+     * 
+     * @param studentId student ID to search for
+     * @return recordID for the given StudentID if found or print out a message and return -1
+     */
     long search(long studentId) {
-        /**
-         * TODO:
-         * Implement this function to search in the B+Tree.
-         * Return recordID for the given StudentID.
-         * Otherwise, print out a message that the given studentId has not been found in the table and return -1.
-         */
     	String errorMsg = "The given studentId has not been found in the table.";
     	
     	//if tree is empty display error message
@@ -65,7 +65,7 @@ class BTree {
     			}
     		}
     		
-    		//
+    		//search within the leaf node
     		for (int i = 0; i < current.n; i++) {
     			if (current.keys[i] == studentId) {
     				return current.values[i];
@@ -74,10 +74,18 @@ class BTree {
     	
     	}
     	
+    	//if we didnt find the student id print error and quit with -1
     	System.out.println(errorMsg);
         return -1;
     }
 
+    /**
+     * Inserts the student ID and record ID in the B+Tree.
+     * Student is also deleted from the .csv file.
+     * 
+     * @param student student object to delete the record ID for
+     * @return the B+Tree
+     */
     BTree insert(Student student) {
     	int maxNode = (2 * this.t);
     	
@@ -268,7 +276,14 @@ class BTree {
         return this;
     }
     
-    //recursive helper function to insert a node into the internal (non-leaf) nodes
+    /***********************************************************
+     * Recursive helper function to insert a node into the internal
+     * (non-leaf) nodes of the B+Tree
+     * 
+     * @param key value to insert into the 
+     * @param current node where the key should be inserted
+     * @param child node already containing the key
+     ***********************************************************/
     void recursiveInsert(long key, BTreeNode current, BTreeNode child) {
     	int maxNode = (2 * this.t);
     	//if the nodes has available space for a new child
@@ -393,7 +408,13 @@ class BTree {
     	
     }
     
-    //helper function to find the parent node of a node
+    /***********************************************************
+     * Helper function to find the parent node of a given node
+     * 
+     * @param current the root node of the BTree
+     * @param child the node whose parent we want to find
+     * @return the parent node to the child node
+     ***********************************************************/
     BTreeNode findParentNode(BTreeNode current, BTreeNode child) {
     	BTreeNode parent= null;
     	
@@ -420,12 +441,19 @@ class BTree {
     	return parent;
     }
     
+    /***********************************************************
+     * Helper function to find the left key in the left most leaf
+     * @param current
+     * @return
+     ***********************************************************/
     Long getLeftKey(BTreeNode current) {
     	
+    	//trace down the the left most leaf node
     	while (current.leaf == false) {
     		current = current.children[0];
     	}
     	
+    	//return the left most key
     	return current.keys[0];
     }
     
@@ -780,6 +808,11 @@ class BTree {
         return true;
     }
 
+    
+    /**
+     * Function to print the B+Tree
+     * @return a list of recordIDs from left to right of leaf nodes.
+     */
     List<Long> print() {
 
         List<Long> listOfRecordID = new ArrayList<>();
@@ -789,22 +822,20 @@ class BTree {
         	return listOfRecordID;
         }
         
-        /**
-         * TODO:
-         * Implement this function to print the B+Tree.
-         * Return a list of recordIDs from left to right of leaf nodes.
-         *
-         */
-        
+        //if root exists
         BTreeNode current = this.root;
+        //trace down the left most child in the left most node until we reach the leaf
         while(current.leaf == false) {
         	current = current.children[0];
         }
-
+        
+        //print all leaf nodes from left to right until leak key is null
         while(current != null) {
+        	//add all keys in the current leaf node
 			for (int i = 0; i < current.n; i++) {
         		listOfRecordID.add(current.keys[i]);
         	}
+			//set current to the next leaf
 			current = current.next;
         }
         
