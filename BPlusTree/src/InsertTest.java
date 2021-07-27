@@ -413,6 +413,19 @@ public class InsertTest {
 	}
 	
 	@Test
+	public void split37() {
+		BTree testTree = new BTree(2);
+		
+		for (int i = 1; i > 38; i++) {
+			testTree.insert(new Student(i, 10, "test", "CS", "level", i));
+		}
+		
+		BTreeNode root = testTree.getRoot();
+		
+		
+	}
+	
+	@Test
 	public void splitXLarge() {
 		BTree testTree = new BTree(2);
 		testTree.insert(new Student(1, 10, "test", "CS", "level", 1));
