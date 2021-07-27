@@ -86,4 +86,34 @@ public class BTreeMainTest {
 		assert(bTree.search((long)13) == (long)12);
 		assert(bTree.search((long)500) == (long)-1);
 	}
+	
+	@Test
+	public void testInsert() throws Exception {
+		setUp("Student.csv","input.txt");
+		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+		//System.out.println("Root 0: " + bTree.getRoot().keys[0]);
+		assert(bTree.getRoot().keys[0] == 13);
+		assert(bTree.getRoot().keys[1] == 0);
+		assert(bTree.getRoot().keys[2] == 0);
+		for (long i = 26; i<38 ; i++) {
+			bTree.insert(new Student(i, (int)i, "test", "CS", "level", 1));
+		}
+		System.out.println("Root 0: " + bTree.getRoot().keys[0]);
+		System.out.println("Root 1: " + bTree.getRoot().keys[1]);
+		assert(bTree.getRoot().keys[0] == 13);
+		assert(bTree.getRoot().keys[1] == 25);
+		assert(bTree.getRoot().keys[1] == 0);
+		
+	}
+	
+	
+	@Test
+	public void testDoubleInsert() throws Exception {
+		setUp("Student.csv","input.txt");
+		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+		assert(bTree.print().size() == 25);
+	}
+	
+	
 }
