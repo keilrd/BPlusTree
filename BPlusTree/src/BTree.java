@@ -781,7 +781,7 @@ class BTree {
                     for (int i = 0; i < child.n; i++) {
                         leftSibling.keys[leftSibling.n + i + offset] = child.keys[i];
                         leftSibling.values[leftSibling.n + i + offset] = child.values[i];
-                        leftSibling.children[leftSibling.n + i + 1] = child.children[i + 1];
+                        leftSibling.children[leftSibling.n + i + 1 + offset] = child.children[i + 1];
                         addedKeys++;
                     }
 
