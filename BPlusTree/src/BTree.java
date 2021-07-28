@@ -26,16 +26,20 @@ class BTree {
         this.root = null;
         this.t = t;
     }
-    
+
+    /**
+     * Returns the root of the tree
+     * @return the root node
+     */
     public BTreeNode getRoot() {
-    	return this.root;
+        return this.root;
     }
 
     /**
-     * Search B+Tree for a given student id
-     * 
-     * @param studentId student ID to search for
-     * @return recordID for the given StudentID if found or print out a message and return -1
+     * Function to search the tree for a given key
+     * @param studentId - The key to search for
+     * @return the record ID for the given student id or -1
+     *         if it is not found
      */
     long search(long studentId) {
     	String errorMsg = "The given studentId has not been found in the table.";
@@ -80,11 +84,9 @@ class BTree {
     }
 
     /**
-     * Inserts the student ID and record ID in the B+Tree.
-     * Student is also deleted from the .csv file.
-     * 
-     * @param student student object to delete the record ID for
-     * @return the B+Tree
+     * Inserts a student into the tree and the Student.csv file
+     * @param student the student to add to the tree
+     * @return the updated BTree
      */
     BTree insert(Student student) {
     	int maxNode = (2 * this.t);
@@ -275,15 +277,13 @@ class BTree {
     	
         return this;
     }
-    
-    /***********************************************************
-     * Recursive helper function to insert a node into the internal
-     * (non-leaf) nodes of the B+Tree
-     * 
-     * @param key value to insert into the 
-     * @param current node where the key should be inserted
-     * @param child node already containing the key
-     ***********************************************************/
+
+    /**
+     * recursive helper function to insert a node into the internal (non-leaf) nodes
+     * @param key the student ID to insert
+     * @param current the current node to insert the student under
+     * @param child the new child node to insert
+     */
     void recursiveInsert(long key, BTreeNode current, BTreeNode child) {
     	int maxNode = (2 * this.t);
     	//if the nodes has available space for a new child
@@ -415,30 +415,31 @@ class BTree {
      * @param child the node whose parent we want to find
      * @return the parent node to the child node
      ***********************************************************/
+
     BTreeNode findParentNode(BTreeNode current, BTreeNode child) {
-    	BTreeNode parent= null;
-    	
-    	//if it reaches the end of the tree and does not find node
-    	if (current.leaf || current.children[0].leaf) {
-    		return null;
-    	}
-    	
-    	//traverse the tree
-    	for (int i = 0; i < current.n + 1; i++) {
-    		//if the node is a child or the current node return the current node
-    		if (current.children[i] == child) {
-    			parent = current;
-    			return parent;
-    		}else {
-    			//if not found recursively call on the child nodes
-    			parent = findParentNode(current.children[i],child);
-    			if(parent != null) {
-    				return parent;
-    			}
-    		}
-    	}
-    	
-    	return parent;
+        BTreeNode parent = null;
+
+        // if it reaches the end of the tree and does not find node
+        if (current.leaf || current.children[0].leaf) {
+            return null;
+        }
+
+        // traverse the tree
+        for (int i = 0; i < current.n + 1; i++) {
+            // if the node is a child or the current node return the current node
+            if (current.children[i] == child) {
+                parent = current;
+                return parent;
+            } else {
+                // if not found recursively call on the child nodes
+                parent = findParentNode(current.children[i], child);
+                if (parent != null) {
+                    return parent;
+                }
+            }
+        }
+
+        return parent;
     }
     
     /***********************************************************
@@ -446,6 +447,7 @@ class BTree {
      * @param current
      * @return
      ***********************************************************/
+
     Long getLeftKey(BTreeNode current) {
     	
     	//trace down the the left most leaf node
@@ -456,7 +458,7 @@ class BTree {
     	//return the left most key
     	return current.keys[0];
     }
-    
+
 
     /**
      * Deletes the record ID for a given student ID from the tree
@@ -465,8 +467,6 @@ class BTree {
      */
     boolean delete(long studentId) {
 
-        //TODO delete from CSV file too
-
         boolean success = false;
 
         success = delete(root, studentId);
@@ -474,6 +474,14 @@ class BTree {
         // if the root is now empty, the tree is empty so delete the root
         if (root != null && root.n == 0) {
             root = null;
+        }
+
+        // if found, delete from csv file
+
+        if (success) {
+
+            deleteFromFile(studentId);
+
         }
 
 
@@ -807,20 +815,65 @@ class BTree {
 
         return true;
     }
-
+    
     
     /**
-     * Function to print the B+Tree
-     * 
-     * @return a list of recordIDs from left to right of leaf nodes.
+     * Deletes the student ID from the csv file
+     * @param studentId The student to delete
+     */
+    void deleteFromFile(long studentId) {
+
+        try {
+
+            File studentFile = new File("Student.csv");
+            File tempFile = new File("tempStudent.tmp");
+
+            tempFile.createNewFile();
+
+            Scanner scanner = new Scanner(studentFile);
+
+            FileWriter fileWriter = new FileWriter(tempFile);
+            PrintWriter writer = new PrintWriter(fileWriter);
+
+            // loop over lines in file and add students that should remain to array list
+            while (scanner.hasNextLine()) {
+
+                // get current line from scanner
+                String line = scanner.nextLine();
+                String[] student = line.split(",");
+
+                if (studentId != Long.parseLong(student[0])) {
+                    writer.println(line);
+                    writer.flush();
+                }
+            }
+
+            writer.close();
+            scanner.close();
+
+            tempFile.renameTo(studentFile);
+
+
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Insert: " + e);
+
+        } catch (Exception e2) {
+            System.out.println(e2);
+        }
+    }
+
+    /**
+     * Returns an ArrayList of record IDs in order of student ID
+     * @return ArrayList of record IDs
      */
     List<Long> print() {
 
         List<Long> listOfRecordID = new ArrayList<>();
-        
+
         // null case
         if (this.root == null) {
-        	return listOfRecordID;
+            return listOfRecordID;
         }
         
         //if root exists
@@ -839,7 +892,7 @@ class BTree {
 			//set current to the next leaf
 			current = current.next;
         }
-        
         return listOfRecordID;
     }
 }
+
