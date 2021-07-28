@@ -106,9 +106,7 @@ public class BTreeMainTest {
 		
 		// now delete
 	//	System.out.println(bTree.print());
-		bTree.visualize();
 		bTree.delete(25);
-		bTree.visualize();
 		System.out.println(bTree.getRoot().keys[0]);
 		System.out.println(bTree.getRoot().keys[1]);
 //		System.out.println(bTree.print());
