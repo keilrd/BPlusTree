@@ -118,6 +118,10 @@ class BTree {
 
                 // loop over keys in the node
                 for (int i = 0; i < current.n; i++) {
+                	//if key is already inserted in the tree exit early without inserting
+    				if (student.studentId == current.keys[i]) {
+    					return this;
+    				}
                     // if current node key is larger than the key to insert we found where we need
                     // to insert the node
                     if (student.studentId < current.keys[i]) {
@@ -407,12 +411,13 @@ class BTree {
 
     }
 
-    /**
-     * helper function to find the parent node of a node
-     * @param 
-     * @param
-     * @return 
-     */
+    /***********************************************************
+     * Helper function to find the parent node of a given node
+     * 
+     * @param current the root node of the BTree
+     * @param child the node whose parent we want to find
+     * @return the parent node to the child node
+     ***********************************************************/
     BTreeNode findParentNode(BTreeNode current, BTreeNode child) {
         BTreeNode parent = null;
 
@@ -439,6 +444,11 @@ class BTree {
         return parent;
     }
 
+    /***********************************************************
+     * Helper function to find the left key in the left most leaf
+     * @param current
+     * @return
+     ***********************************************************/
     Long getLeftKey(BTreeNode current) {
 
         while (current.leaf == false) {
@@ -813,7 +823,7 @@ class BTree {
 
         try {
 
-            File studentFile = new File("Student.csv");
+            File studentFile = new File("src/Student.csv");
             File tempFile = new File("tempStudent.tmp");
 
             tempFile.createNewFile();
@@ -864,22 +874,20 @@ class BTree {
             return listOfRecordID;
         }
 
-        /**
-         * TODO:
-         * Implement this function to print the B+Tree.
-         * Return a list of recordIDs from left to right of leaf nodes.
-         *
-         */
-
+        //if root exists
         BTreeNode current = this.root;
+        //trace down the left most child in the left most node until we reach the leaf
         while (current.leaf == false) {
             current = current.children[0];
         }
-
+        
+        //print all leaf nodes from left to right until leak key is null
         while (current != null) {
+        	//add all keys in the current leaf node
             for (int i = 0; i < current.n; i++) {
                 listOfRecordID.add(current.keys[i]);
             }
+            //set current to the next leaf
             current = current.next;
         }
 
