@@ -90,30 +90,66 @@ public class BTreeMainTest {
 	@Test
 	public void testInsert() throws Exception {
 		setUp("Student.csv","input.txt");
-		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+		bTree.insert(new Student(25, 10, "test insert", "CS", "level", 1));
 		//System.out.println("Root 0: " + bTree.getRoot().keys[0]);
 		assert(bTree.getRoot().keys[0] == 13);
 		assert(bTree.getRoot().keys[1] == 0);
 		assert(bTree.getRoot().keys[2] == 0);
 		for (long i = 26; i<38 ; i++) {
-			bTree.insert(new Student(i, (int)i, "test", "CS", "level", 1));
+			bTree.insert(new Student(i, (int)i, "test insert", "CS", "level", 1));
 		}
-		System.out.println("Root 0: " + bTree.getRoot().keys[0]);
-		System.out.println("Root 1: " + bTree.getRoot().keys[1]);
+//		System.out.println("Root 0: " + bTree.getRoot().keys[0]);
+//		System.out.println("Root 1: " + bTree.getRoot().keys[1]);
 		assert(bTree.getRoot().keys[0] == 13);
 		assert(bTree.getRoot().keys[1] == 25);
-		assert(bTree.getRoot().keys[1] == 0);
+		assert(bTree.getRoot().keys[2] == 0);
+		
+		// now delete
+	//	System.out.println(bTree.print());
+		bTree.delete(25);
+		System.out.println(bTree.getRoot().keys[0]);
+		System.out.println(bTree.getRoot().keys[1]);
+//		System.out.println(bTree.print());
+		for (long i=26; i<38; i++) {
+			assert(bTree.delete(i)==true);
+			System.out.println("Deleting this value did work: " + i);
+		}
 		
 	}
 	
-	
-	@Test
+
 	public void testDoubleInsert() throws Exception {
 		setUp("Student.csv","input.txt");
-		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
-		bTree.insert(new Student(25, 10, "test", "CS", "level", 1));
+		System.out.println(bTree.print().size());
+		bTree.insert(new Student(25, 10, "test double insert", "CS", "level", 1));
+		System.out.println(bTree.print().size());
+		bTree.insert(new Student(25, 10, "test double insert", "CS", "level", 1));
+		System.out.println(bTree.print().size());
 		assert(bTree.print().size() == 25);
+		assert(bTree.delete(25)==true);
 	}
 	
-	
+	@Test
+	public void testDelete() throws Exception {
+		setUp("Student.csv","input.txt");
+//		System.out.println("test delete before deleting: " + bTree.print());
+		for(long i = 30; i < 35; i++) {
+			bTree.insert(new Student(i, 10, "test", "CS", "level", 1));
+			assert(bTree.delete(i));
+			assert(!bTree.print().contains(i));
+			for (long j=1; j<25; j++) {
+				assert(bTree.print().contains(j));
+				assert(bTree.search(j) != -1);
+			}
+		}
+//		System.out.println("test delete after deleting: "+ bTree.print());
+	}
+	@Test
+	public void testFailDelete() throws Exception {
+		setUp("Student.csv","input.txt");
+//		System.out.println(bTree.print());
+		for(long i = 50; i < 100; i++) {
+			assert(bTree.delete(i)==false);
+		}
+	}
 }
